@@ -103,7 +103,7 @@ const Mutation = {
 
 		if (postIndex === -1) throw new Error('Post not found')
 
-		const { post } = db.posts.splice(postIndex, 1)
+		const [ post ] = db.posts.splice(postIndex, 1)
 
 		db.comments = db.comments.filter((comment) => comment.post !== post.id)
 
@@ -179,9 +179,11 @@ const Mutation = {
 		}
 
 		db.comments.push(comment)
-		pubsub.publish(`comment ${args.data.post}`, {
-			mutation: 'CREATED',
-			data: comment,
+		pubsub.publish(`comment ${comment.post}`, {
+			comment: {
+				mutation: 'CREATED',
+				data: comment,
+			},
 		})
 
 		return comment
@@ -191,11 +193,13 @@ const Mutation = {
 
 		if (commentIndex === -1) throw new Error('Comment not found')
 
-		const { comment } = db.comments.splice(commentIndex, 1)
+		const [ comment ] = db.comments.splice(commentIndex, 1)
 
-		pubsub.publish(`comment ${args.data.post}`, {
-			mutation: 'DELETED',
-			data: comment,
+		pubsub.publish(`comment ${comment.post}`, {
+			comment: {
+				mutation: 'DELETED',
+				data: comment,
+			},
 		})
 
 		return comment
@@ -211,9 +215,11 @@ const Mutation = {
 
 		if (typeof data.text === 'string') comment.text = data.text
 
-		pubsub.publish(`comment ${args.data.post}`, {
-			mutation: 'UPDATED',
-			data: comment,
+		pubsub.publish(`comment ${comment.post}`, {
+			comment: {
+				mutation: 'UPDATED',
+				data: comment,
+			},
 		})
 
 		return comment
