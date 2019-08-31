@@ -186,7 +186,7 @@ const Mutation = {
 
 		return comment
 	},
-	deleteComment(parent, args, { db }, info) {
+	deleteComment(parent, args, { db, pubsub }, info) {
 		const commentIndex = db.comments.findIndex((comment) => comment.id == args.id)
 
 		if (commentIndex === -1) throw new Error('Comment not found')
@@ -200,7 +200,7 @@ const Mutation = {
 
 		return comment
 	},
-	updateComment(parent, args, { db }, info) {
+	updateComment(parent, args, { db, pubsub }, info) {
 		const { id, data } = args
 
 		const comment = db.comments.find((comment) => comment.id == id)
